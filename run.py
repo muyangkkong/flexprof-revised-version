@@ -33,9 +33,16 @@ for bm in benchmarks:
                     print(len(performance))
                     break
     performance.sort(key=lambda x: x[1])
+    if not performance:
+        print(f"[WARN] No performance entries found for benchmark '{bm}'. Skipping.")
+        continue  
     best = performance[0]
-
-    fractions_list.append((bm, f"{best[0].split('_')[1].split('.')[0]}/100"))
+    try:
+        frac_part = best[0].split('_')[1].split('.')[0]
+    except Exception as e:
+        print(f"[WARN] Unexpected filename format: {best[0]} ({e}). Using fallback '0'")
+        frac_part = "-1"
+    fractions_list.append((bm, f"{frac_part}/100"))
 output_txt=f"output/best_fractions{core_id}.txt"
 
 with open(output_txt,"w") as f:
