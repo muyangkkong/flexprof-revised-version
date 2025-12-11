@@ -89,7 +89,7 @@ with open(output_txt,"r") as f:
             "python3", 
             "convertexcel.py", 
             core_id, 
-            "--remaining", remaining_csv, 
+            remaining_csv
         ]
         subprocess.run(cmd3)
 
