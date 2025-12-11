@@ -102,6 +102,14 @@ with open(output_txt,"r") as f:
             f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}")
     processes.append(subprocess.Popen(cmd5, shell=True))
     wait_for_available_slot(processes, max_processes)
+    remaining_csv="0,1,2,3,4,5,6"
+    cmd3 = [
+            "python3", 
+            "convertexcel.py", 
+            core_id, 
+            "--remaining", remaining_csv
+        ]
+    subprocess.run(cmd3)
     
     '''cmd6 = (f"bin/usimm-rta {input_file} "
             f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
