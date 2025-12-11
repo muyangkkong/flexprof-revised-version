@@ -2,14 +2,20 @@ import os
 import re
 import pandas as pd
 import numpy as np
-import sys as argv
+import sys
+import argparse
 
 
 try:
-    fraction_core=argv[1]
+    fraction_core=sys.argv[1]
 except IndexError:
     print("Usage: python3 convertexcel.py <fraction_core>")
     exit(1)
+
+remaining = []
+if len(sys.argv) > 2:
+    remaining_csv = sys.argv[2]
+    remaining = [int(x) for x in remaining_csv.split(",")]
     
 INPUT_DOMAINS_DIR = "input/domains"
 RWOPT_OUTPUT_DIR = "output/7domains_8banks_8ranks_addressmapping2"
@@ -133,7 +139,7 @@ def main():
     rows = []
     for bm in sorted(benchmarks):
         filename = os.path.join(RWOPT_OUTPUT_DIR, f"rwopt-{bm}")
-        row = {"benchmark": bm, "file_found": os.path.exists(filename)}
+        row = {"benchmark": bm, "remaining": str(remaining)}
         if not os.path.exists(filename):
         # leave metrics as None but mark missing file
             rows.append(row)
