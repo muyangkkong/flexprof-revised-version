@@ -150,12 +150,20 @@ def main():
     df = pd.DataFrame(rows)
     df=df.set_index("benchmark")
     os.makedirs(os.path.dirname(OUT_XLSX),exist_ok=True)
-    try:
-        df.to_excel(OUT_XLSX,index=True)
-        print(f"Saved DataFrame to {OUT_XLSX}")
-    except Exception as e:
-        print("[Error] failed")
-    print(f"Saved metrics for {len(rows)} benchmarks to {OUT_XLSX}")
+    if not os.path.exists(OUT_XLSX):
+    # 파일이 없으면 새로 생성
+        df.to_excel(OUT_XLSX, index=True)
+        print(f"Created and saved DataFrame to {OUT_XLSX}")
+    else:
+        # 파일이 있으면 기존 시트의 마지막 행 아래에 이어붙임
+        wb = openpyxl.load_workbook(OUT_XLSX)
+        sheet = wb.active
+        startrow = sheet.max_row  # 기존 데이터의 마지막 행 번호
+    
+        with pd.ExcelWriter(OUT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
+            df.to_excel(writer, index=True, header=False, startrow=startrow)
+        print(f"Appended DataFrame to {OUT_XLSX} starting at row {startrow + 1}")
+        print(f"Saved metrics for {len(rows)} benchmarks to {OUT_XLSX}")
 
 if __name__ == "__main__":
         main()
