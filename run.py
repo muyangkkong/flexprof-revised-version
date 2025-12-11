@@ -76,6 +76,16 @@ with open(output_txt,"r") as f:
                 f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{exclude}")
         processes.append(subprocess.Popen(cmd2, shell=True))
         wait_for_available_slot(processes, max_processes)
+        
+        remaining_csv = ",".join(str(n) for n in remaining)
+        cmd3 = [
+            "python3", 
+            "convertexcel.py", 
+            fraction_core, 
+            "--remaining", remaining_csv, 
+        ]
+        subprocess.run(cmd3)
+
     # Start the second set of commands
     cmd5 = (f"bin/usimm-rwopt {input_file} "
             f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
@@ -85,6 +95,7 @@ with open(output_txt,"r") as f:
             f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}")
     processes.append(subprocess.Popen(cmd5, shell=True))
     wait_for_available_slot(processes, max_processes)
+    
     '''cmd6 = (f"bin/usimm-rta {input_file} "
             f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
             f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "
