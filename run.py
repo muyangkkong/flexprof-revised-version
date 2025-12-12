@@ -2,6 +2,7 @@ import time
 import os
 import subprocess
 from sys import argv
+import openpyxl
 # Define the lists of fractions and benchmarks
 fractions_list = []
 
@@ -21,7 +22,7 @@ if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 
-for bm in benchmarks:
+'''for bm in benchmarks:
     performance = []
     std_outs = [file for file in os.listdir(f"output/profile/{bm}") if os.path.isfile(os.path.join(f"output/profile/{bm}", file))]
     std_outs = [f"output/profile/{bm}/{file}" for file in std_outs]
@@ -35,21 +36,22 @@ for bm in benchmarks:
     performance.sort(key=lambda x: x[1])
     if not performance:
         print(f"[WARN] No performance entries found for benchmark '{bm}'. Skipping.")
-        continue  
+        continue
     best = performance[0]
     try:
         frac_part = best[0].split('_')[1].split('.')[0]
     except Exception as e:
         print(f"[WARN] Unexpected filename format: {best[0]} ({e}). Using fallback '0'")
         frac_part = "-1"
-    fractions_list.append((bm, f"{frac_part}/100"))
+    fractions_list.append((bm, f"{frac_part}/100"))'''
+
 output_txt=f"output/best_fractions{core_id}.txt"
 
-with open(output_txt,"w") as f:
+'''with open(output_txt,"w") as f:
 
     for bm, fractions in fractions_list:
         f.write(f"{bm}: {fractions}\n")
-print(f"Saved to {output_txt}")
+print(f"Saved to {output_txt}")'''
 
 max_processes = 20
 def wait_for_available_slot(processes, max_processes):
@@ -72,6 +74,7 @@ with open(output_txt,"r") as f:
     print(benchmark)
     time.sleep(2)
 
+    nums=list(range(7))
     for exclude in nums:
         remaining = [n for n in nums if n!=exclude]
         core_paths=""
@@ -83,12 +86,12 @@ with open(output_txt,"r") as f:
                 f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{exclude}")
         processes.append(subprocess.Popen(cmd2, shell=True))
         wait_for_available_slot(processes, max_processes)
-        
+
         remaining_csv = ",".join(str(n) for n in remaining)
         cmd3 = [
-            "python3", 
-            "convertexcel.py", 
-            core_id, 
+            "python3",
+            "convertexcel.py",
+            core_id,
             remaining_csv
         ]
         subprocess.run(cmd3)
@@ -104,13 +107,13 @@ with open(output_txt,"r") as f:
     wait_for_available_slot(processes, max_processes)
     remaining_csv="0,1,2,3,4,5,6"
     cmd3 = [
-            "python3", 
-            "convertexcel.py", 
-            core_id, 
+            "python3",
+            "convertexcel.py",
+            core_id,
             "--remaining", remaining_csv
         ]
     subprocess.run(cmd3)
-    
+
     '''cmd6 = (f"bin/usimm-rta {input_file} "
             f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
             f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "

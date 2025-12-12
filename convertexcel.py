@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import sys
 import argparse
+import openpyxl
 
 
 try:
@@ -16,7 +17,7 @@ remaining = []
 if len(sys.argv) > 2:
     remaining_csv = sys.argv[2]
     remaining = [int(x) for x in remaining_csv.split(",")]
-    
+
 INPUT_DOMAINS_DIR = "input/domains"
 RWOPT_OUTPUT_DIR = "output/7domains_8banks_8ranks_addressmapping2"
 OUT_XLSX = f"output/metrics_by_{fraction_core}.xlsx"
@@ -165,7 +166,7 @@ def main():
         wb = openpyxl.load_workbook(OUT_XLSX)
         sheet = wb.active
         startrow = sheet.max_row  # 기존 데이터의 마지막 행 번호
-    
+
         with pd.ExcelWriter(OUT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
             df.to_excel(writer, index=True, header=False, startrow=startrow)
         print(f"Appended DataFrame to {OUT_XLSX} starting at row {startrow + 1}")
