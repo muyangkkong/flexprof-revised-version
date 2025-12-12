@@ -1,6 +1,4 @@
 bt: 0/100
-bwaves: 0/100
-cactuBSSN: 8/100
 cam4: 0/100
 cg: 0/100
 dc: 0/100
@@ -14,10 +12,8 @@ lbm: 36/100
 lu: 0/100
 mcf: 0/100
 mg: 0/100
-namd: 0/100
+namd: 40/100
 omnetpp: 5/100
-perl: 0/100
 roms: 0/100
 sp: 0/100
 ua: 0/100
-xalanc: 0/100
