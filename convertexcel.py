@@ -16,7 +16,9 @@ except IndexError:
 remaining = []
 if len(sys.argv) > 2:
     remaining_csv = sys.argv[2]
-    remaining = [int(x) for x in remaining_csv.split(",")]
+    #remaining = [int(x) for x in remaining_csv.split(",")]
+    #print(remaining)
+    sheetname=sys.argv[3]
 
 INPUT_DOMAINS_DIR = "input/domains"
 RWOPT_OUTPUT_DIR = "output/7domains_8banks_8ranks_addressmapping2"
@@ -139,7 +141,7 @@ def main():
 
     rows = []
     for bm in sorted(benchmarks):
-        filename = os.path.join(RWOPT_OUTPUT_DIR, f"rwopt-{bm}")
+        filename = os.path.join(RWOPT_OUTPUT_DIR, f"rwopt-{bm}{remaining_csv}")
         row = {"benchmark": bm, "remaining": str(remaining)}
         if not os.path.exists(filename):
         # leave metrics as None but mark missing file
@@ -159,17 +161,13 @@ def main():
     os.makedirs(os.path.dirname(OUT_XLSX),exist_ok=True)
     if not os.path.exists(OUT_XLSX):
     # 파일이 없으면 새로 생성
-        df.to_excel(OUT_XLSX, index=True)
+        df.to_excel(OUT_XLSX, sheet_name=sheetname,index=True)
         print(f"Created and saved DataFrame to {OUT_XLSX}")
     else:
-        # 파일이 있으면 기존 시트의 마지막 행 아래에 이어붙임
-        wb = openpyxl.load_workbook(OUT_XLSX)
-        sheet = wb.active
-        startrow = sheet.max_row  # 기존 데이터의 마지막 행 번호
 
-        with pd.ExcelWriter(OUT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
-            df.to_excel(writer, index=True, header=False, startrow=startrow)
-        print(f"Appended DataFrame to {OUT_XLSX} starting at row {startrow + 1}")
+        with pd.ExcelWriter(OUT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+            df.to_excel(writer,sheet_name=sheetname, index=True,)
+        #print(f"Appended DataFrame to {OUT_XLSX} starting at row {startrow + 1}")
         print(f"Saved metrics for {len(rows)} benchmarks to {OUT_XLSX}")
 
 if __name__ == "__main__":

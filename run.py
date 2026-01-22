@@ -76,24 +76,30 @@ with open(output_txt,"r") as f:
 
     nums=list(range(7))
     for exclude in nums:
+
         remaining = [n for n in nums if n!=exclude]
+        remaining_csv = ",".join(str(n) for n in remaining)
         core_paths=""
         for num in remaining:
             core_paths+=f" input/domains/{benchmark}/core_{num}-2"
 
         cmd2 = (f"bin/usimm-fsbta-rwopt {input_file} "
                 f"{core_paths} "
-                f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{exclude}")
+                f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{remaining_csv}")
+
         processes.append(subprocess.Popen(cmd2, shell=True))
         wait_for_available_slot(processes, max_processes)
-
-        remaining_csv = ",".join(str(n) for n in remaining)
+        #at least it exclude the numbers and run it. and it should be written in one excel filename
+        for p in processes:
+            p.wait()
         cmd3 = [
             "python3",
             "convertexcel.py",
             core_id,
-            remaining_csv
+            remaining_csv,
+            f"Sheet_{exclude}"
         ]
+        #it willbe rewritten.
         subprocess.run(cmd3)
 
     # Start the second set of commands
@@ -110,7 +116,8 @@ with open(output_txt,"r") as f:
             "python3",
             "convertexcel.py",
             core_id,
-            remaining_csv
+            remaining_csv,
+            "Sheet_All"
         ]
     subprocess.run(cmd3)
 
