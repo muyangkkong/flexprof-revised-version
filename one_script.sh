@@ -4,15 +4,26 @@
 configs=("input/7domains_8banks_8ranks_addressmapping2.cfg")
 output=("output/7domains_8banks_8ranks_addressmapping2")
 
-benchmarks=(lbm namd cam4  deepsjeng fotonik3d mcf gcc roms omnetpp bt dc ep ft is lu mg sp ua cg)
+benchmarks=(lbm namd cam4  deepsjeng fotonik3d mcf gcc roms omnetpp bt dc ep ft perl lu mg sp ua cg)
 i=0
 for config in "${configs[@]}"
 do
   for core in {0..6}; do
     for bm in "${benchmarks[@]}";do
-      #python3 ratio_profiler.py input/domains/${bm}/core_${core}-2 4 "$bm" "$config"
-      python3 run.py "$config" "${output[$i]}" "$core"
+      python3 ratio_profiler.py input/domains/${bm}/core_${core}-2 4 "$bm" "$config"
+      python3 run.py "$config" "${output[$i]}" "$core" "$bm"
     done
+    echo "starting Excel conversion for Core $core.."
+    for exclude in {0..6}; do
+      remaining=""
+      for r in {0..6}; do
+        if [ $r -ne $exclude ]; then
+          if [ -z "$remaining"]; then remaining="$r";else remaining="$remaining,$r"; fi
+        fi
+      done
+      python3 convertexcel.py "$core" "$remaining" "Sheet_$exclude"
+    done
+    python3 convertexcel.py "$core" "0,1,2,3,4,5,6" "Sheet_All"
   done
   i=$((i+1))
 done

@@ -13,6 +13,7 @@ try:
     input_file = argv[1]
     output_folder = argv[2]
     core_id=argv[3]
+    target_benchmark=argv[4]
 except IndexError:
     print("Usage: python3 run.py <input_file> <output_folder> <core_id>")
     exit(1)
@@ -66,78 +67,47 @@ with open(output_txt,"r") as f:
     #read the line
     for line in f:
         benchmark,fractions_str = line.split(':')
-    benchmark= benchmark.strip()
-    fractions_str =(fractions_str.strip()+" ")* domains
-   #Start the first set of commands
-    cmd1 = f"python3 pattern_finder.py {fractions_str} input/patterns/{benchmark}.8pattern {banks[0]}"
-    processes.append(subprocess.Popen(cmd1, shell=True))
-    print(benchmark)
-    time.sleep(2)
+        if (benchmark.strip()==target_benchmark):
+            benchmark= benchmark.strip()
+            fractions_str =(fractions_str.strip()+" ")* domains
+            break
+           #Start the first set of commands
+if not benchmark:
+    print(f"Error: Benchmark {target_benchmark} not found")
+    exit(1)
+processes=[]
 
-    nums=list(range(7))
-    for exclude in nums:
+cmd1 = f"python3 pattern_finder.py {fractions_str} input/patterns/{benchmark}.8pattern {banks[0]}"
+print(f"{benchmark} generating patterns..")
+subprocess.run(cmd1,shell=True)
 
-        remaining = [n for n in nums if n!=exclude]
-        remaining_csv = ",".join(str(n) for n in remaining)
-        core_paths=""
-        for num in remaining:
-            core_paths+=f" input/domains/{benchmark}/core_{num}-2"
+nums=list(range(7))
+for exclude in nums:
 
-        cmd2 = (f"bin/usimm-fsbta-rwopt {input_file} "
-                f"{core_paths} "
-                f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{remaining_csv}")
+    remaining = [n for n in nums if n!=exclude]
+    remaining_csv = ",".join(str(n) for n in remaining)
+    core_paths=""
+    for num in remaining:
+        core_paths+=f" input/domains/{benchmark}/core_{num}-2"
 
-        processes.append(subprocess.Popen(cmd2, shell=True))
-        wait_for_available_slot(processes, max_processes)
-        #at least it exclude the numbers and run it. and it should be written in one excel filename
-        for p in processes:
-            p.wait()
-        cmd3 = [
-            "python3",
-            "convertexcel.py",
-            core_id,
-            remaining_csv,
-            f"Sheet_{exclude}"
-        ]
-        #it willbe rewritten.
-        subprocess.run(cmd3)
+    cmd2 = (f"bin/usimm-fsbta-rwopt {input_file} "
+            f"{core_paths} "
+            f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{remaining_csv}")
+    print(f"{benchmark} running exclude cores {exclude}")
+    processes.append(subprocess.Popen(cmd2,shell=True))
 
-    # Start the second set of commands
-    cmd5 = (f"bin/usimm-rwopt {input_file} "
-            f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
-            f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "
-            f"input/domains/{benchmark}/core_4-2 input/domains/{benchmark}/core_5-2 "
-            f"input/domains/{benchmark}/core_6-2 "
-            f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}")
-    processes.append(subprocess.Popen(cmd5, shell=True))
-    wait_for_available_slot(processes, max_processes)
-    remaining_csv="0,1,2,3,4,5,6"
-    cmd3 = [
-            "python3",
-            "convertexcel.py",
-            core_id,
-            remaining_csv,
-            "Sheet_All"
-        ]
-    subprocess.run(cmd3)
-
-    '''cmd6 = (f"bin/usimm-rta {input_file} "
-            f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
-            f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "
-            f"input/domains/{benchmark}/core_4-2 input/domains/{benchmark}/core_5-2 "
-            f"input/domains/{benchmark}/core_6-2 "
-            f"> {output_folder}/rta-{benchmark}")
-    processes.append(subprocess.Popen(cmd6, shell=True))
-    wait_for_available_slot(processes, max_processes)
-    cmd7 = (f"bin/usimm {input_file} "
-            f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
-            f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "
-            f"input/domains/{benchmark}/core_4-2 input/domains/{benchmark}/core_5-2 "
-            f"input/domains/{benchmark}/core_6-2 "
-            f"> {output_folder}/base-{benchmark}")
-    processes.append(subprocess.Popen(cmd7, shell=True))
-    wait_for_available_slot(processes, max_processes)
-'''
-# Wait for all processes to complete
+remaining_csv="0,1,2,3,4,5,6"
+            # Start the second set of commands
+cmd5 = (f"bin/usimm-fsbta-rwopt {input_file} "
+        f"input/domains/{benchmark}/core_0-2 input/domains/{benchmark}/core_1-2 "
+        f"input/domains/{benchmark}/core_2-2 input/domains/{benchmark}/core_3-2 "
+        f"input/domains/{benchmark}/core_4-2 input/domains/{benchmark}/core_5-2 "
+        f"input/domains/{benchmark}/core_6-2 "
+        f"input/patterns/{benchmark}.8pattern > {output_folder}/rwopt-{benchmark}{remaining_csv}")
+print(f"{benchmark} running all cores")
+processes.append(subprocess.Popen(cmd5,shell=True))
 for p in processes:
     p.wait()
+print(f"{benchmark} All Simulations finished")
+
+# Wait for all processes to complete
