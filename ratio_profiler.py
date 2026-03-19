@@ -38,9 +38,9 @@ ratio = 0
 for r in ratios:
     t = r.split("/")[0]
     b = r.split("/")[1]
-    subprocess.run(["mkdir", "-p", f"profile/{output_folder}"])
-    output_files.append(f"profile/{output_folder}/output_{t}.{b}.txt")
-    subprocess.run(["python3", python_script, r, r, r, r, r, r, r, f"profile/{output_folder}/output_{t}.{b}.txt", banks])
+    subprocess.run(["mkdir", "-p", f"profile1/{output_folder}"])
+    output_files.append(f"profile1/{output_folder}/output_{t}.{b}.txt")
+    subprocess.run(["python3", python_script, r, r, r, r, r, r, r, f"profile1/{output_folder}/output_{t}.{b}.txt", banks])
 #making pattern in this code
     print(f"Making pattern {output_folder}\n")
 std_outs = []
@@ -48,7 +48,7 @@ processes = []
 lock = threading.Lock()
 
 def run_process(output_file):
-    subprocess.run(["mkdir", "-p", f"output/profile/{output_folder}"])
+    subprocess.run(["mkdir", "-p", f"output/profile1/{output_folder}"])
     with open(f"output/{output_file}.stdout", "w") as f:
         p = subprocess.Popen(["bin/usimm-fsbta-rwopt", f"{input_file}", f"input/domains/{output_folder}/core_0-2" ,"input/domains/{output_folder}/core_1-2",
         f"input/domains/{output_folder}/core_2-2", "input/domains/{output_folder}/core_3-2",
