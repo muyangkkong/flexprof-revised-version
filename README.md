@@ -35,6 +35,14 @@ The model accurately maps hardware characteristics to the target distribution. T
 | `BANK_ACCESS_VARIANCE` | **0.1591** | Indicates structural bank conflicts and request distribution skewness. |
 | `MLP` | **0.1156** | Represents Memory-Level Parallelism changes across read/write phases. |
 | `QUEUE_LATENCY` | **0.1102** | Captures request buffering delays inside the controller queue. |
+| `WEIGHTED_SPEEDUP` | **0.0956** | Normalized throughput metric across co-running workloads. |
+| `IPC` | **0.0743** | Instructions Per Cycle; reflects CPU-side demand on memory subsystem. |
+| `TOTAL_SIMULATION_CYCLES` | **0.0528** | Total cycles elapsed; proxy for workload length and memory pressure. |
+| `SUM_COMMITTED` | **0.0425** | Total committed instructions; indicates workload intensity. |
+| `READ_WRITE_LATENCY_RATIO` | **0.0170** | Derived ratio of queue latency to MLP; captures asymmetric R/W timing. |
+| `SUM_OF_EXECUTION_TIMES` | **0.0027** | Aggregate execution time; correlates with memory access duration. |
+| `BANK_ACCESS_MEAN` | **0.0000** | Average bank access count; baseline for access distribution analysis. |
+| `CYCLES_PER_REQUEST` | **0.0000** | Derived cycles per memory request; measures per-request memory cost. |
 
 ---
 
